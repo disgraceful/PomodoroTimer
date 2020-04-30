@@ -1,28 +1,20 @@
 const timerPara = document.querySelector("#timer");
 const statusString = document.querySelector("#status");
-const startBtn = document.querySelector("#startBtn");
-const resetBtn = document.querySelector("#resetBtn");
 const settingsDiv = document.querySelector("#settings");
-const pomodoroTimeInput = document.querySelector("#pomodoro");
-const breakTimeInput = document.querySelector("#break");
-const longBreakTimeInput = document.querySelector("#lbreak");
-const saveBtn = document.querySelector("#saveBtn");
-const defaultBtn = document.querySelector("#defaultBtn");
-
-const finishBtn = document.querySelector("#finishBtn");
-
+const inputs = document.querySelectorAll("input");
+const [pomodoroTimeInput, breakTimeInput, longBreakTimeInput] = inputs;
+const buttons = document.querySelectorAll("button");
+const [startBtn, finishBtn, resetBtn, saveBtn, defaultBtn] = buttons;
 
 
 const defaultWorkTime = 25 * 60;
 const defaultBreakTime = 5 * 60;
 const defaultLongBreakTime = 10 * 60;
 
-const settings = localStorage.getItem("settings");
+const settings = JSON.parse(localStorage.getItem("settings"));
 pomodoroTimeInput.value = settings ? settings.work : defaultWorkTime / 60;
 breakTimeInput.value = settings ? settings.break : defaultBreakTime / 60;
 longBreakTimeInput.value = settings ? settings.long : defaultLongBreakTime / 60;
-
-
 let workTime = pomodoroTimeInput.value * 60;
 let breakTime = breakTimeInput.value * 60;
 let longBreakTime = longBreakTimeInput.value * 60;
@@ -30,7 +22,6 @@ let longBreakTime = longBreakTimeInput.value * 60;
 
 let status = "work";
 let notificatonStatus = Notification.permission === "granted";
-let settingsActive = false;
 
 const timeMap = new Map();
 timeMap.set("work", workTime);
@@ -40,10 +31,6 @@ timeMap.set("long break", breakTime);
 let timerActive = false;
 let activeTime = workTime;
 let workCycle = 0;
-
-finishBtn.addEventListener("click", () => {
-    activeTime = 2;
-})
 
 if (!window.Notification) {
     console.log('Browser does not support notifications.');
@@ -60,10 +47,11 @@ if (!window.Notification) {
 }
 
 const calcTime = (time) => {
-    const minutes = Math.floor(time / 60);
+    const hours = Math.floor(time / 3600);
+    const minutes = Math.floor((time % 3600) / 60);
     const seconds = time % 60;
-    console.log(`${formatTime(minutes)} : ${formatTime(seconds)}`);
-    timerPara.textContent = `${formatTime(minutes)} : ${formatTime(seconds)}`;
+    console.log(`${formatTime(hours)} : ${formatTime(minutes)} : ${formatTime(seconds)}`);
+    timerPara.textContent = `${formatTime(hours)}: ${formatTime(minutes)} : ${formatTime(seconds)}`;
 }
 
 const formatTime = (time) => {
@@ -117,8 +105,18 @@ const createNotification = () => {
     }
 }
 
+const resetTimer = () => {
+    activeTime = timeMap.get(status);
+    startBtn.textContent = "Start";
+    if (timerActive) {
+        startBtn.classList.toggle("active");
+        startBtn.classList.toggle("paused");
+        timerActive = false;
+    }
+    calcTime(activeTime);
+}
+
 const showSettings = () => {
-    settingsActive = !settingsActive;
     settingsDiv.classList.toggle("hidden");
 }
 
@@ -126,6 +124,7 @@ const setDefaultSettings = () => {
     pomodoroTimeInput.value = defaultWorkTime / 60;
     breakTimeInput.value = defaultBreakTime / 60;
     longBreakTimeInput.value = defaultLongBreakTime / 60;
+    saveSettings();
 }
 
 const saveSettings = () => {
@@ -146,28 +145,18 @@ const saveSettings = () => {
         timeMap.set("work", workTime);
         timeMap.set("break", breakTime);
         timeMap.set("long break", breakTime);
+        resetTimer();
     }
 }
 
 startBtn.addEventListener("click", () => {
     timerActive = !timerActive;
     startBtn.textContent = timerActive ? "Pause" : "Start";
-    console.log(timerActive ? "Timer resumed" : "Timer paused");
-
     startBtn.classList.toggle("active");
     startBtn.classList.toggle("paused");
 });
 
-resetBtn.addEventListener("click", () => {
-    activeTime = timeMap.get(status);
-    startBtn.textContent = "Start";
-    if (timerActive) {
-        startBtn.classList.toggle("active");
-        startBtn.classList.toggle("paused");
-        timerActive = false;
-    }
-    calcTime(activeTime);
-});
-
+resetBtn.addEventListener("click", resetTimer);
 defaultBtn.addEventListener("click", setDefaultSettings);
 saveBtn.addEventListener("click", saveSettings);
+finishBtn.addEventListener("click", () => activeTime = 2);
