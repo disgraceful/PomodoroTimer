@@ -22,7 +22,6 @@ let longBreakTime = longBreakTimeInput.value * 60;
 
 let status = "work";
 let notificatonStatus = Notification.permission === "granted";
-let settingsActive = false;
 
 const timeMap = new Map();
 timeMap.set("work", workTime);
@@ -32,8 +31,6 @@ timeMap.set("long break", breakTime);
 let timerActive = false;
 let activeTime = workTime;
 let workCycle = 0;
-
-
 
 if (!window.Notification) {
     console.log('Browser does not support notifications.');
@@ -119,7 +116,6 @@ const resetTimer = () => {
 }
 
 const showSettings = () => {
-    settingsActive = !settingsActive;
     settingsDiv.classList.toggle("hidden");
 }
 
@@ -155,8 +151,6 @@ const saveSettings = () => {
 startBtn.addEventListener("click", () => {
     timerActive = !timerActive;
     startBtn.textContent = timerActive ? "Pause" : "Start";
-    console.log(timerActive ? "Timer resumed" : "Timer paused");
-
     startBtn.classList.toggle("active");
     startBtn.classList.toggle("paused");
 });
