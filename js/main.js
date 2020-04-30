@@ -17,7 +17,7 @@ const defaultWorkTime = 25 * 60;
 const defaultBreakTime = 5 * 60;
 const defaultLongBreakTime = 10 * 60;
 
-const settings = localStorage.getItem("settings");
+const settings = JSON.parse(localStorage.getItem("settings"));
 pomodoroTimeInput.value = settings ? settings.work : defaultWorkTime / 60;
 breakTimeInput.value = settings ? settings.break : defaultBreakTime / 60;
 longBreakTimeInput.value = settings ? settings.long : defaultLongBreakTime / 60;
@@ -80,6 +80,7 @@ const formatTime = (time) => {
 calcTime(activeTime);
 statusString.textContent = status;
 const myInterval = setInterval(() => {
+    console.log(activeTime)
     if (timerActive) {
         activeTime--;
         if (activeTime < 0) {
@@ -117,6 +118,17 @@ const createNotification = () => {
     }
 }
 
+const resetTimer = () => {
+    activeTime = timeMap.get(status);
+    startBtn.textContent = "Start";
+    if (timerActive) {
+        startBtn.classList.toggle("active");
+        startBtn.classList.toggle("paused");
+        timerActive = false;
+    }
+    calcTime(activeTime);
+}
+
 const showSettings = () => {
     settingsActive = !settingsActive;
     settingsDiv.classList.toggle("hidden");
@@ -126,6 +138,7 @@ const setDefaultSettings = () => {
     pomodoroTimeInput.value = defaultWorkTime / 60;
     breakTimeInput.value = defaultBreakTime / 60;
     longBreakTimeInput.value = defaultLongBreakTime / 60;
+    saveSettings();
 }
 
 const saveSettings = () => {
@@ -146,6 +159,7 @@ const saveSettings = () => {
         timeMap.set("work", workTime);
         timeMap.set("break", breakTime);
         timeMap.set("long break", breakTime);
+        resetTimer();
     }
 }
 
@@ -158,16 +172,6 @@ startBtn.addEventListener("click", () => {
     startBtn.classList.toggle("paused");
 });
 
-resetBtn.addEventListener("click", () => {
-    activeTime = timeMap.get(status);
-    startBtn.textContent = "Start";
-    if (timerActive) {
-        startBtn.classList.toggle("active");
-        startBtn.classList.toggle("paused");
-        timerActive = false;
-    }
-    calcTime(activeTime);
-});
-
+resetBtn.addEventListener("click", resetTimer);
 defaultBtn.addEventListener("click", setDefaultSettings);
 saveBtn.addEventListener("click", saveSettings);
