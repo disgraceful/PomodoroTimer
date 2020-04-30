@@ -1,0 +1,135 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 10px;
+}
+
+header {
+    background-color: #ccc;
+}
+
+header h2 {
+    font-size: 3rem;
+    color: #333;
+    padding: 3rem;
+    margin: 0;
+}
+
+.wrapper {
+    padding: 2rem;
+}
+
+.timer-wrapper {
+    font-size: 5.6rem;
+    padding: 1.6rem;
+    text-align: center;
+}
+
+.timer-wrapper #status {
+    font-size: 2.4rem;
+}
+
+.btn-wrapper {
+    text-align: center;
+    padding: 1.6rem;
+}
+
+.btn-wrapper button {
+    height: 6rem;
+    font-size: 1.8rem;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+}
+
+.btn-wrapper a {
+    font-size: 2.4rem;
+    color: inherit;
+    text-decoration: none;
+}
+
+.btn-wrapper a:hover {
+    text-decoration: underline;
+}
+
+.input-wrapper {
+    padding: 1.6rem;
+}
+
+.input-wrapper .input {
+    display: flex;
+    flex-direction: column;
+    padding: 0.8rem 1.6rem;
+    font-size: 1.8rem;
+}
+
+.input-wrapper input {
+    font-size: 1.8rem;
+    padding: 0.2rem;
+}
+
+.input-wrapper label {
+    padding: 0.4rem;
+}
+
+button:focus {
+    outline: none;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+button:last-child {
+    background-color: #B0BEC5;
+}
+
+button:last-child:hover {
+    background-color: #90A4AE;
+}
+
+.active {
+    background-color: #00E676;
+}
+
+.paused {
+    background-color: #FF1744;
+}
+
+.active:hover {
+    background-color: #00C853;
+}
+
+.paused:hover {
+    background-color: #D50000;
+}
+
+#saveBtn {
+    background-color: #1E88E5;
+}
+
+#saveBtn:hover {
+    background-color: #1976D2;
+}
+
+@media only screen and (min-width:600px) {
+    .btn-wrapper {
+        display: flex;
+        justify-content: center;
+    }
+    .btn-wrapper button {
+        width: 13rem;
+        margin: 0 1rem;
+    }
+    .input-wrapper {
+        display: flex;
+    }
+    .input-wrapper .input {
+        flex: 1 1 auto;
+        min-width: 10rem;
+    }
+}

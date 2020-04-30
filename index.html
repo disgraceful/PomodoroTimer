@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer</title>
+    <link rel="stylesheet" href="./style/style.css">
+    </style>
+    <script src="./js/main.js" defer>
+    </script>
+
+</head>
+
+<body>
+    <header>
+        <h2>Pomodoro Timer</h2>
+    </header>
+    <div class="wrapper">
+
+        <div class="timer-wrapper">
+            <p id="timer"></p>
+            <p id="status"></p>
+        </div>
+        <div class="btn-wrapper">
+            <button type="button" id="startBtn" class="active">Start</button>
+            <button type="button" id="finishBtn">Finish</button>
+            <button type="button" id="resetBtn">Reset</button>
+
+        </div>
+        <hr>
+        <div class="btn-wrapper">
+            <a href="#" onclick="showSettings()">Settings</a>
+        </div>
+        <div class="hidden" id="settings">
+            <div class="input-wrapper">
+                <div class="input">
+                    <label for="pomodoro">Pomodoro</label>
+                    <input type="number" name="Pomodoro" id="pomodoro" value="25" min="1">
+                </div>
+                <div class="input">
+                    <label for="break">Break</label>
+                    <input type="number" name="Break" id="break" value="5" min="1">
+                </div>
+                <div class="input">
+                    <label for="lbreak">Long Break</label>
+                    <input type="number" name="LongBreak" id="lbreak" value="10" min="1">
+                </div>
+            </div>
+            <div class="btn-wrapper">
+                <button type="button" id="saveBtn">Save</button>
+                <button type="button" id="defaultBtn">Default</button>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>
