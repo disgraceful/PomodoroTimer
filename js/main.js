@@ -1,16 +1,10 @@
 const timerPara = document.querySelector("#timer");
 const statusString = document.querySelector("#status");
-const startBtn = document.querySelector("#startBtn");
-const resetBtn = document.querySelector("#resetBtn");
 const settingsDiv = document.querySelector("#settings");
-const pomodoroTimeInput = document.querySelector("#pomodoro");
-const breakTimeInput = document.querySelector("#break");
-const longBreakTimeInput = document.querySelector("#lbreak");
-const saveBtn = document.querySelector("#saveBtn");
-const defaultBtn = document.querySelector("#defaultBtn");
-
-const finishBtn = document.querySelector("#finishBtn");
-
+const inputs = document.querySelectorAll("input");
+const [pomodoroTimeInput, breakTimeInput, longBreakTimeInput] = inputs;
+const buttons = document.querySelectorAll("button");
+const [startBtn, finishBtn, resetBtn, saveBtn, defaultBtn] = buttons;
 
 
 const defaultWorkTime = 25 * 60;
@@ -21,8 +15,6 @@ const settings = JSON.parse(localStorage.getItem("settings"));
 pomodoroTimeInput.value = settings ? settings.work : defaultWorkTime / 60;
 breakTimeInput.value = settings ? settings.break : defaultBreakTime / 60;
 longBreakTimeInput.value = settings ? settings.long : defaultLongBreakTime / 60;
-
-
 let workTime = pomodoroTimeInput.value * 60;
 let breakTime = breakTimeInput.value * 60;
 let longBreakTime = longBreakTimeInput.value * 60;
@@ -41,9 +33,7 @@ let timerActive = false;
 let activeTime = workTime;
 let workCycle = 0;
 
-finishBtn.addEventListener("click", () => {
-    activeTime = 2;
-})
+
 
 if (!window.Notification) {
     console.log('Browser does not support notifications.');
@@ -80,7 +70,6 @@ const formatTime = (time) => {
 calcTime(activeTime);
 statusString.textContent = status;
 const myInterval = setInterval(() => {
-    console.log(activeTime)
     if (timerActive) {
         activeTime--;
         if (activeTime < 0) {
@@ -175,3 +164,4 @@ startBtn.addEventListener("click", () => {
 resetBtn.addEventListener("click", resetTimer);
 defaultBtn.addEventListener("click", setDefaultSettings);
 saveBtn.addEventListener("click", saveSettings);
+finishBtn.addEventListener("click", () => activeTime = 2);
