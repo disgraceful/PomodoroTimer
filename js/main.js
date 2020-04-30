@@ -47,10 +47,11 @@ if (!window.Notification) {
 }
 
 const calcTime = (time) => {
-    const minutes = Math.floor(time / 60);
+    const hours = Math.floor(time / 3600);
+    const minutes = Math.floor((time % 3600) / 60);
     const seconds = time % 60;
-    console.log(`${formatTime(minutes)} : ${formatTime(seconds)}`);
-    timerPara.textContent = `${formatTime(minutes)} : ${formatTime(seconds)}`;
+    console.log(`${formatTime(hours)} : ${formatTime(minutes)} : ${formatTime(seconds)}`);
+    timerPara.textContent = `${formatTime(hours)}: ${formatTime(minutes)} : ${formatTime(seconds)}`;
 }
 
 const formatTime = (time) => {
