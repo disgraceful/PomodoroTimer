@@ -1,11 +1,15 @@
 const timerPara = document.querySelector("#timer");
 const statusString = document.querySelector("#status");
 const settingsDiv = document.querySelector("#settings");
+
 const inputs = document.querySelectorAll("input");
 const [pomodoroTimeInput, breakTimeInput, longBreakTimeInput] = inputs;
-const buttons = document.querySelectorAll("button");
-const [startBtn, finishBtn, resetBtn, saveBtn, defaultBtn] = buttons;
 
+const selectButtons = document.querySelectorAll(".btn-select");
+const [workBtn, breakBtn,longBreakBtn] = selectButtons;
+
+const regularButtons = document.querySelectorAll("button:not(.btn-select)");
+const [startBtn, finishBtn, resetBtn, saveBtn, defaultBtn] = regularButtons;
 
 const defaultWorkTime = 25 * 60;
 const defaultBreakTime = 5 * 60;
@@ -15,10 +19,10 @@ const settings = JSON.parse(localStorage.getItem("settings"));
 pomodoroTimeInput.value = settings ? settings.work : defaultWorkTime / 60;
 breakTimeInput.value = settings ? settings.break : defaultBreakTime / 60;
 longBreakTimeInput.value = settings ? settings.long : defaultLongBreakTime / 60;
+
 let workTime = pomodoroTimeInput.value * 60;
 let breakTime = breakTimeInput.value * 60;
 let longBreakTime = longBreakTimeInput.value * 60;
-
 
 let status = "work";
 let notificatonStatus = Notification.permission === "granted";
@@ -26,7 +30,7 @@ let notificatonStatus = Notification.permission === "granted";
 const timeMap = new Map();
 timeMap.set("work", workTime);
 timeMap.set("break", breakTime);
-timeMap.set("long break", breakTime);
+timeMap.set("long break", longBreakTime);
 
 let timerActive = false;
 let activeTime = workTime;
@@ -44,6 +48,45 @@ if (!window.Notification) {
             console.error(err);
         });
     }
+}
+
+const changeStatusBtnStyling = (sessionStatus, event)=>{
+    if(status===sessionStatus){
+        return;
+    }
+    const activeBtn = document.querySelector(".selected");
+    activeBtn.classList.toggle("selected");
+    event.target.classList.toggle("selected");
+    setStatus(sessionStatus);
+    resetTimer();
+}
+
+const changeStatusStyling = (newStatus)=>{
+    const activeBtn = document.querySelector(".selected");
+    activeBtn.classList.toggle("selected");
+    switch(newStatus){
+        case "work":
+            workBtn.classList.toggle("selected");
+            break;
+        case "break":
+            breakBtn.classList.toggle("selected");
+            break;
+        case "long break":
+            longBreakBtn.classList.toggle("selected");
+            break;   
+    }
+    setStatus(newStatus);
+}
+
+const setStatus = (sessionStatus) =>{
+    status = sessionStatus;
+    statusString.textContent = statusToString();
+}
+
+
+
+const statusToString = ()=>{
+    return `${status==='work'? `Session #${workCycle+1}`:"Resting..." }`;
 }
 
 const calcTime = (time) => {
@@ -64,9 +107,8 @@ const formatTime = (time) => {
     return time;
 }
 
-
 calcTime(activeTime);
-statusString.textContent = status;
+statusString.textContent = statusToString();
 const myInterval = setInterval(() => {
     if (timerActive) {
         activeTime--;
@@ -83,18 +125,15 @@ const finishCycle = () => {
         createNotification();
         if (workCycle >= 4) {
             workCycle = 0;
-            status = "long break";
-            statusString.textContent = status;
+            changeStatusStyling("long break");
             activeTime = longBreakTime;
         } else {
-            status = "break";
-            statusString.textContent = status;
+            changeStatusStyling("break")
             activeTime = breakTime;
         }
     } else {
         createNotification();
-        status = "work"
-        statusString.textContent = status;
+        changeStatusStyling("work")
         activeTime = workTime;
     }
 }
@@ -113,6 +152,7 @@ const resetTimer = () => {
         startBtn.classList.toggle("paused");
         timerActive = false;
     }
+    workCycle = 0
     calcTime(activeTime);
 }
 
@@ -155,6 +195,12 @@ startBtn.addEventListener("click", () => {
     startBtn.classList.toggle("active");
     startBtn.classList.toggle("paused");
 });
+
+
+workBtn.addEventListener("click",changeStatusBtnStyling.bind(this,"work"));
+breakBtn.addEventListener("click",changeStatusBtnStyling.bind(this,"break"));
+longBreakBtn.addEventListener("click",changeStatusBtnStyling.bind(this,"long break"));
+
 
 resetBtn.addEventListener("click", resetTimer);
 defaultBtn.addEventListener("click", setDefaultSettings);
