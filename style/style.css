@@ -20,7 +20,7 @@ header h2 {
 }
 
 .wrapper {
-    padding: 2rem;
+    padding: 0 2rem;
 }
 
 .timer-wrapper {
@@ -30,24 +30,32 @@ header h2 {
 }
 
 .timer-wrapper #status {
-    font-size: 2.4rem;
+    font-size: 2.8rem;
 }
 
 .btn-wrapper {
     text-align: center;
     padding: 1.6rem;
+    max-width: 90rem;
+    margin: 0 auto;
 }
 
 .btn-wrapper button {
     height: 6rem;
-    font-size: 1.8rem;
+    font-size: 2rem;
     cursor: pointer;
     display: block;
     width: 100%;
 }
 
+.btn-wrapper .btn-select{
+    color: #fff;
+    height: 4rem;
+    border: 1px solid #3949AB
+}
+
 .btn-wrapper a {
-    font-size: 2.4rem;
+    font-size: 3.2rem;
     color: inherit;
     text-decoration: none;
 }
@@ -58,13 +66,16 @@ header h2 {
 
 .input-wrapper {
     padding: 1.6rem;
+    padding-top: 0;
+    max-width: 90rem;
+    margin:0 auto;
 }
 
 .input-wrapper .input {
     display: flex;
     flex-direction: column;
     padding: 0.8rem 1.6rem;
-    font-size: 1.8rem;
+    font-size: 2.4rem;
 }
 
 .input-wrapper input {
@@ -84,11 +95,19 @@ button:focus {
     visibility: hidden;
 }
 
-button:last-child {
+.btn-select{
+    background-color: #039BE5;
+}
+
+.selected, .btn-select:hover{
+    background-color: #1976D2;
+}
+
+.grey {
     background-color: #B0BEC5;
 }
 
-button:last-child:hover {
+.grey:hover {
     background-color: #90A4AE;
 }
 
@@ -108,11 +127,11 @@ button:last-child:hover {
     background-color: #D50000;
 }
 
-#saveBtn {
+.blue {
     background-color: #1E88E5;
 }
 
-#saveBtn:hover {
+.blue:hover {
     background-color: #1976D2;
 }
 
@@ -124,6 +143,10 @@ button:last-child:hover {
     .btn-wrapper button {
         width: 13rem;
         margin: 0 1rem;
+    }
+    .btn-wrapper .btn-select{
+        width: 100%;
+        margin: 0;
     }
     .input-wrapper {
         display: flex;

@@ -17,16 +17,19 @@
         <h2>Pomodoro Timer</h2>
     </header>
     <div class="wrapper">
-
+        <div class="btn-wrapper">
+            <button type="button" class="btn-select selected">Work</button>
+            <button type="button" class="btn-select">Short Break</button>
+            <button type="button" class="btn-select"> Long Break</button>
+        </div>
         <div class="timer-wrapper">
-            <p id="timer"></p>
             <p id="status"></p>
+            <p id="timer"></p>
         </div>
         <div class="btn-wrapper">
-            <button type="button" id="startBtn" class="active">Start</button>
-            <button type="button" id="finishBtn">Finish</button>
-            <button type="button" id="resetBtn">Reset</button>
-
+            <button type="button" class="active">Start</button>
+            <button type="button">Finish</button>
+            <button type="button" class="grey">Reset</button>
         </div>
         <hr>
         <div class="btn-wrapper">
@@ -48,13 +51,10 @@
                 </div>
             </div>
             <div class="btn-wrapper">
-                <button type="button" id="saveBtn">Save</button>
-                <button type="button" id="defaultBtn">Default</button>
+                <button type="button" class="blue">Save</button>
+                <button type="button">Default</button>
             </div>
         </div>
-
     </div>
-
 </body>
-
 </html>
