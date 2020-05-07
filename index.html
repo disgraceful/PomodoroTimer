@@ -15,7 +15,12 @@
 <body>
     <header>
         <h2>Pomodoro Timer</h2>
+        <div class="spacer"></div>
+        <div class="header-links">
+            <a href="#" onclick="showLogs()">Logs</a>
+        </div>
     </header>
+    
     <div class="wrapper">
         <div class="btn-wrapper">
             <button type="button" class="btn-select selected">Work</button>
@@ -50,10 +55,31 @@
                     <input type="number" name="LongBreak" id="lbreak" value="10" min="1">
                 </div>
             </div>
+            <div class="input-wrapper">
+                <input type="checkbox" id="continueCB" checked>
+                <label for="continueCB">Auto-continue timer?</label>
+            </div>
             <div class="btn-wrapper">
                 <button type="button" class="blue">Save</button>
-                <button type="button">Default</button>
+                <button type="button" class="grey">Default</button>
             </div>
+        </div>
+        <div class="popup hidden">
+            <h3>Pomodoro log</h3>
+            <a href="#" onclick="showLogs()" class="close-btn"></a>
+            <div class="popup-content">
+                <button type="button" class="grey">Clear log</button>
+            </div>
+            <table class="log-table">
+                <thead>
+                    <tr>
+                        <th>Session</th>
+                        <th>Length</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
     </div>
 </body>
