@@ -100,9 +100,6 @@ const calcTime = (time) => {
   const hours = Math.floor(time / 3600);
   const minutes = Math.floor((time % 3600) / 60);
   const seconds = time % 60;
-  console.log(
-    `${formatTime(hours)} : ${formatTime(minutes)} : ${formatTime(seconds)}`
-  );
   timerPara.textContent = `${formatTime(hours)}: ${formatTime(
     minutes
   )} : ${formatTime(seconds)}`;
@@ -181,6 +178,10 @@ const resetTimer = () => {
 
 const showSettings = () => {
   settingsDiv.classList.toggle("hidden");
+};
+
+const showLogs = () => {
+  document.querySelector(".popup").classList.toggle("hidden");
 };
 
 const setDefaultSettings = () => {
