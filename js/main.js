@@ -43,6 +43,8 @@ let timerActive = false;
 let activeTime = workTime;
 let workCycle = 0;
 
+const logs = [];
+
 if (!window.Notification) {
   console.log("Browser does not support notifications.");
 } else {
@@ -121,7 +123,6 @@ const myInterval = setInterval(() => {
   if (timerActive) {
     activeTime--;
     if (activeTime < 0) {
-      console.log(autoResume);
       if (!autoResume) {
         resetTimer();
       } else {
@@ -134,6 +135,7 @@ const myInterval = setInterval(() => {
 
 const finishCycle = () => {
   if (status === "work") {
+    createLogEntry(timeMap.get(status) - (activeTime + 1));
     workCycle++;
     createNotification();
     if (workCycle >= 4) {
@@ -146,6 +148,7 @@ const finishCycle = () => {
     }
   } else {
     createNotification();
+    createLogEntry(timeMap.get(status) - (activeTime + 1));
     changeStatusStyling("work");
     activeTime = workTime;
   }
@@ -176,12 +179,20 @@ const resetTimer = () => {
   calcTime(activeTime);
 };
 
-const showSettings = () => {
-  settingsDiv.classList.toggle("hidden");
-};
-
 const showLogs = () => {
   document.querySelector(".popup").classList.toggle("hidden");
+};
+
+const createLogEntry = (elapsedTime) => {
+  const logName =
+    status === "work" ? `${status}_${workCycle + 1}` : `${status}`;
+  const logTime = elapsedTime ? elapsedTime : timeMap.get(status);
+  const logDate = new Date().toLocaleDateString();
+  logs.push({ logName, logTime, logDate });
+};
+
+const showSettings = () => {
+  settingsDiv.classList.toggle("hidden");
 };
 
 const setDefaultSettings = () => {
