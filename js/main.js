@@ -14,7 +14,14 @@ const selectButtons = document.querySelectorAll(".btn-select");
 const [workBtn, breakBtn, longBreakBtn] = selectButtons;
 
 const regularButtons = document.querySelectorAll("button:not(.btn-select)");
-const [startBtn, finishBtn, resetBtn, saveBtn, defaultBtn] = regularButtons;
+const [
+  startBtn,
+  finishBtn,
+  resetBtn,
+  saveBtn,
+  defaultBtn,
+  clearLogBtn,
+] = regularButtons;
 const logTable = document.querySelector("table");
 
 const defaultWorkTime = 25 * 60;
@@ -44,7 +51,7 @@ let timerActive = false;
 let activeTime = workTime;
 let workCycle = 0;
 
-const logs = [];
+let logs = [];
 
 if (!window.Notification) {
   console.log("Browser does not support notifications.");
@@ -168,6 +175,9 @@ const createNotification = () => {
 };
 
 const resetTimer = () => {
+  if (activeTime < timeMap.get(status)) {
+    createLogEntry(timeMap.get(status) - (activeTime + 1));
+  }
   activeTime = timeMap.get(status);
   startBtn.textContent = "Start";
   if (timerActive) {
@@ -202,6 +212,18 @@ const addLogEntry = (logEntry) => {
     td.appendChild(value);
     tr.appendChild(td);
   }
+};
+
+const clearLogs = () => {
+  logs = [];
+  console.log(logTable.children[0].children);
+  const rows = logTable.children[0].children;
+  Array.prototype.filter.call(rows, (element, index) => {
+    if (index > 0) {
+      element.parentNode.removeChild(element);
+    }
+  });
+  console.log(logTable.children[0].children);
 };
 
 const showSettings = () => {
@@ -261,3 +283,4 @@ resetBtn.addEventListener("click", resetTimer);
 defaultBtn.addEventListener("click", setDefaultSettings);
 saveBtn.addEventListener("click", saveSettings);
 finishBtn.addEventListener("click", () => (activeTime = 2));
+clearLogBtn.addEventListener("click", clearLogs);
