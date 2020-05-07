@@ -129,6 +129,11 @@ table.log-table th {
   padding: 0.4rem 0.3rem;
 }
 
+table.log-table thead {
+  background: #fff;
+  border-bottom: 2px solid #444444;
+}
+
 table.log-table tr:nth-child(even) {
   background-color: #fff;
 }

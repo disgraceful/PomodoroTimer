@@ -22,7 +22,7 @@ const [
   defaultBtn,
   clearLogBtn,
 ] = regularButtons;
-const logTable = document.querySelector("table");
+const logTable = document.querySelector("tbody");
 
 const defaultWorkTime = 25 * 60;
 const defaultBreakTime = 5 * 60;
@@ -110,9 +110,11 @@ const calcTime = (time) => {
   const hours = Math.floor(time / 3600);
   const minutes = Math.floor((time % 3600) / 60);
   const seconds = time % 60;
-  timerPara.textContent = `${formatTime(hours)}: ${formatTime(
-    minutes
-  )} : ${formatTime(seconds)}`;
+  return {
+    hours: formatTime(hours),
+    minutes: formatTime(minutes),
+    seconds: formatTime(seconds),
+  };
 };
 
 const formatTime = (time) => {
@@ -125,7 +127,11 @@ const formatTime = (time) => {
   return time;
 };
 
-calcTime(activeTime);
+const updateTime = ({ hours, minutes, seconds }) => {
+  timerPara.textContent = `${hours}: ${minutes} : ${seconds}`;
+};
+
+updateTime(calcTime(activeTime));
 statusString.textContent = statusToString();
 const myInterval = setInterval(() => {
   if (timerActive) {
@@ -137,7 +143,7 @@ const myInterval = setInterval(() => {
         finishCycle();
       }
     }
-    calcTime(activeTime);
+    updateTime(calcTime(activeTime));
   }
 }, 1000);
 
@@ -187,7 +193,7 @@ const resetTimer = () => {
   }
   workCycle = 0;
   setStatus(status);
-  calcTime(activeTime);
+  updateTime(calcTime(activeTime));
 };
 
 const showLogs = () => {
@@ -198,8 +204,13 @@ const createLogEntry = (elapsedTime) => {
   const logName =
     status === "work" ? `${status}_${workCycle + 1}` : `${status}`;
   const logTime = elapsedTime ? elapsedTime : timeMap.get(status);
+  const { hours, minutes, seconds } = calcTime(logTime);
+  const editedTime =
+    logTime > 3600
+      ? `${hours} : ${minutes} : ${seconds}`
+      : `${minutes} : ${seconds}`;
   const logDate = new Date().toLocaleDateString();
-  const logEntry = { logName, logTime, logDate };
+  const logEntry = { logName, editedTime, logDate };
   logs.push(logEntry);
   addLogEntry(logEntry);
 };
@@ -215,15 +226,9 @@ const addLogEntry = (logEntry) => {
 };
 
 const clearLogs = () => {
-  logs = [];
-  console.log(logTable.children[0].children);
-  const rows = logTable.children[0].children;
-  Array.prototype.filter.call(rows, (element, index) => {
-    if (index > 0) {
-      element.parentNode.removeChild(element);
-    }
-  });
-  console.log(logTable.children[0].children);
+  console.log(logTable.children);
+  logTable.innerHTML = "";
+  console.log(logTable.children);
 };
 
 const showSettings = () => {
