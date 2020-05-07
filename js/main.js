@@ -15,6 +15,7 @@ const [workBtn, breakBtn, longBreakBtn] = selectButtons;
 
 const regularButtons = document.querySelectorAll("button:not(.btn-select)");
 const [startBtn, finishBtn, resetBtn, saveBtn, defaultBtn] = regularButtons;
+const logTable = document.querySelector("table");
 
 const defaultWorkTime = 25 * 60;
 const defaultBreakTime = 5 * 60;
@@ -167,7 +168,6 @@ const createNotification = () => {
 };
 
 const resetTimer = () => {
-  console.log(status);
   activeTime = timeMap.get(status);
   startBtn.textContent = "Start";
   if (timerActive) {
@@ -176,6 +176,7 @@ const resetTimer = () => {
     timerActive = false;
   }
   workCycle = 0;
+  setStatus(status);
   calcTime(activeTime);
 };
 
@@ -188,7 +189,19 @@ const createLogEntry = (elapsedTime) => {
     status === "work" ? `${status}_${workCycle + 1}` : `${status}`;
   const logTime = elapsedTime ? elapsedTime : timeMap.get(status);
   const logDate = new Date().toLocaleDateString();
-  logs.push({ logName, logTime, logDate });
+  const logEntry = { logName, logTime, logDate };
+  logs.push(logEntry);
+  addLogEntry(logEntry);
+};
+
+const addLogEntry = (logEntry) => {
+  const tr = logTable.insertRow();
+  for (const logData in logEntry) {
+    const td = document.createElement("td");
+    const value = document.createTextNode(logEntry[logData]);
+    td.appendChild(value);
+    tr.appendChild(td);
+  }
 };
 
 const showSettings = () => {
