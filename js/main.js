@@ -83,7 +83,7 @@ const statusToString = () => {
 
 updateTime(calcTime(activeTime));
 statusString.textContent = statusToString();
-const myInterval = setInterval(() => {
+setInterval(() => {
   if (timerActive) {
     activeTime--;
     if (activeTime < 0) {
