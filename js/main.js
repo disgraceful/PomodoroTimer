@@ -1,15 +1,15 @@
-const timerPara = document.querySelector("#timer");
+import { calcTime, updateTime } from "./timer.js";
+import { initNotification, createNotification } from "./notification.js";
+import { showLogs, clearLogs, createLogEntry } from "./logs.js";
+import {
+  initSettings,
+  showSettings,
+  setDefaultSettings,
+  saveSettings,
+  loadSettings,
+} from "./settings.js";
+
 const statusString = document.querySelector("#status");
-const settingsDiv = document.querySelector("#settings");
-
-const inputs = document.querySelectorAll("input");
-const [
-  pomodoroTimeInput,
-  breakTimeInput,
-  longBreakTimeInput,
-  autoResumeBox,
-] = inputs;
-
 const selectButtons = document.querySelectorAll(".btn-select");
 const [workBtn, breakBtn, longBreakBtn] = selectButtons;
 
@@ -22,54 +22,29 @@ const [
   defaultBtn,
   clearLogBtn,
 ] = regularButtons;
-const logTable = document.querySelector("tbody");
 
-const defaultWorkTime = 25 * 60;
-const defaultBreakTime = 5 * 60;
-const defaultLongBreakTime = 10 * 60;
+const showLog = document.querySelector("#showLog");
+const closeLog = document.querySelector(".close-btn");
+const settingsToggle = document.querySelector("#settingsToggle");
 
-const settings = JSON.parse(localStorage.getItem("settings"));
-pomodoroTimeInput.value = settings ? settings.work : defaultWorkTime / 60;
-breakTimeInput.value = settings ? settings.break : defaultBreakTime / 60;
-longBreakTimeInput.value = settings ? settings.long : defaultLongBreakTime / 60;
-autoResumeBox.checked = settings ? settings.resume : true;
-
-let workTime = pomodoroTimeInput.value * 60;
-let breakTime = breakTimeInput.value * 60;
-let longBreakTime = longBreakTimeInput.value * 60;
-let autoResume = autoResumeBox.value;
+let { workTime, breakTime, longBreakTime, autoResume } = initSettings();
 
 let status = "work";
-let notificatonStatus = Notification.permission === "granted";
-
-const timeMap = new Map();
-timeMap.set("work", workTime);
-timeMap.set("break", breakTime);
-timeMap.set("long break", longBreakTime);
-
 let timerActive = false;
 let activeTime = workTime;
 let workCycle = 0;
 
-let logs = [];
+const timeMap = new Map();
+const refreshTimeMap = () => {
+  timeMap.set("work", workTime);
+  timeMap.set("break", breakTime);
+  timeMap.set("long break", longBreakTime);
+};
+refreshTimeMap();
 
-if (!window.Notification) {
-  console.log("Browser does not support notifications.");
-} else {
-  if (Notification.permission !== "granted") {
-    Notification.requestPermission()
-      .then((permission) => {
-        if (permission === "granted") {
-          notificatonStatus = true;
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }
-}
+initNotification();
 
-const changeStatusBtnStyling = (sessionStatus, event) => {
+const changeStatusStylingByBtn = (sessionStatus, event) => {
   if (status === sessionStatus) {
     return;
   }
@@ -106,34 +81,9 @@ const statusToString = () => {
   return `${status === "work" ? `Session #${workCycle + 1}` : "Resting..."}`;
 };
 
-const calcTime = (time) => {
-  const hours = Math.floor(time / 3600);
-  const minutes = Math.floor((time % 3600) / 60);
-  const seconds = time % 60;
-  return {
-    hours: formatTime(hours),
-    minutes: formatTime(minutes),
-    seconds: formatTime(seconds),
-  };
-};
-
-const formatTime = (time) => {
-  if (time < 1) {
-    return "00";
-  }
-  if (time < 10) {
-    return `0${time}`;
-  }
-  return time;
-};
-
-const updateTime = ({ hours, minutes, seconds }) => {
-  timerPara.textContent = `${hours}: ${minutes} : ${seconds}`;
-};
-
 updateTime(calcTime(activeTime));
 statusString.textContent = statusToString();
-const myInterval = setInterval(() => {
+setInterval(() => {
   if (timerActive) {
     activeTime--;
     if (activeTime < 0) {
@@ -149,9 +99,14 @@ const myInterval = setInterval(() => {
 
 const finishCycle = () => {
   if (status === "work") {
-    createLogEntry(timeMap.get(status) - (activeTime + 1));
+    createLogEntry(
+      timeMap.get(status) - (activeTime + 1),
+      status,
+      workCycle,
+      timeMap
+    );
     workCycle++;
-    createNotification();
+    createNotification(status, workCycle);
     if (workCycle >= 4) {
       workCycle = 0;
       changeStatusStyling("long break");
@@ -161,28 +116,26 @@ const finishCycle = () => {
       activeTime = breakTime;
     }
   } else {
-    createNotification();
-    createLogEntry(timeMap.get(status) - (activeTime + 1));
+    createNotification(status, workCycle);
+    createLogEntry(
+      timeMap.get(status) - (activeTime + 1),
+      status,
+      workCycle,
+      timeMap
+    );
     changeStatusStyling("work");
     activeTime = workTime;
-  }
-};
-const createNotification = () => {
-  if (notificatonStatus) {
-    const body =
-      status === "work"
-        ? `Pomodoro session ${workCycle} is finished`
-        : "Break is over";
-    return new Notification("Pomodoro Timer", {
-      body,
-      icon: "../assets/alarm_large.png",
-    });
   }
 };
 
 const resetTimer = () => {
   if (activeTime < timeMap.get(status)) {
-    createLogEntry(timeMap.get(status) - (activeTime + 1));
+    createLogEntry(
+      timeMap.get(status) - (activeTime + 1),
+      status,
+      workCycle,
+      timeMap
+    );
   }
   activeTime = timeMap.get(status);
   startBtn.textContent = "Start";
@@ -196,76 +149,12 @@ const resetTimer = () => {
   updateTime(calcTime(activeTime));
 };
 
-const showLogs = () => {
-  document.querySelector(".popup").classList.toggle("hidden");
-};
-
-const createLogEntry = (elapsedTime) => {
-  const logName =
-    status === "work" ? `${status}_${workCycle + 1}` : `${status}`;
-  const logTime = elapsedTime ? elapsedTime : timeMap.get(status);
-  const { hours, minutes, seconds } = calcTime(logTime);
-  const editedTime =
-    logTime > 3600
-      ? `${hours} : ${minutes} : ${seconds}`
-      : `${minutes} : ${seconds}`;
-  const logDate = new Date().toLocaleDateString();
-  const logEntry = { logName, editedTime, logDate };
-  logs.push(logEntry);
-  addLogEntry(logEntry);
-};
-
-const addLogEntry = (logEntry) => {
-  const tr = logTable.insertRow();
-  for (const logData in logEntry) {
-    const td = document.createElement("td");
-    const value = document.createTextNode(logEntry[logData]);
-    td.appendChild(value);
-    tr.appendChild(td);
-  }
-};
-
-const clearLogs = () => {
-  console.log(logTable.children);
-  logTable.innerHTML = "";
-  console.log(logTable.children);
-};
-
-const showSettings = () => {
-  settingsDiv.classList.toggle("hidden");
-};
-
-const setDefaultSettings = () => {
-  pomodoroTimeInput.value = defaultWorkTime / 60;
-  breakTimeInput.value = defaultBreakTime / 60;
-  longBreakTimeInput.value = defaultLongBreakTime / 60;
-  autoResumeBox.value = true;
+const applySettings = () => {
   saveSettings();
-};
-
-const saveSettings = () => {
-  let workV = pomodoroTimeInput.value;
-  let breakV = breakTimeInput.value;
-  let lbreakV = longBreakTimeInput.value;
-  if (workV <= 0 || breakV <= 0 || lbreakV <= 0) {
-    alert("Please use numbers higher than 0");
-  } else {
-    workTime = workV * 60;
-    breakTime = breakV * 60;
-    longBreakTime = lbreakV * 60;
-    autoResume = autoResumeBox.checked;
-    localStorage.setItem(
-      "settings",
-      JSON.stringify({
-        work: workV,
-        break: breakV,
-        long: lbreakV,
-        resume: autoResumeBox.checked,
-      })
-    );
-    timeMap.set("work", workTime);
-    timeMap.set("break", breakTime);
-    timeMap.set("long break", longBreakTime);
+  const values = loadSettings();
+  if (values) {
+    ({ workTime, breakTime, longBreakTime, autoResume } = values);
+    refreshTimeMap();
     resetTimer();
   }
 };
@@ -277,15 +166,31 @@ startBtn.addEventListener("click", () => {
   startBtn.classList.toggle("paused");
 });
 
-workBtn.addEventListener("click", changeStatusBtnStyling.bind(this, "work"));
-breakBtn.addEventListener("click", changeStatusBtnStyling.bind(this, "break"));
+workBtn.addEventListener("click", changeStatusStylingByBtn.bind(this, "work"));
+breakBtn.addEventListener(
+  "click",
+  changeStatusStylingByBtn.bind(this, "break")
+);
 longBreakBtn.addEventListener(
   "click",
-  changeStatusBtnStyling.bind(this, "long break")
+  changeStatusStylingByBtn.bind(this, "long break")
 );
 
 resetBtn.addEventListener("click", resetTimer);
-defaultBtn.addEventListener("click", setDefaultSettings);
-saveBtn.addEventListener("click", saveSettings);
+defaultBtn.addEventListener("click", () => {
+  setDefaultSettings();
+  applySettings();
+});
+saveBtn.addEventListener("click", applySettings);
 finishBtn.addEventListener("click", () => (activeTime = 2));
 clearLogBtn.addEventListener("click", clearLogs);
+const toggleLogs = (e) => {
+  e.preventDefault();
+  showLogs();
+};
+showLog.addEventListener("click", (e) => toggleLogs(e));
+closeLog.addEventListener("click", (e) => toggleLogs(e));
+settingsToggle.addEventListener("click", (e) => {
+  e.preventDefault();
+  showSettings();
+});
