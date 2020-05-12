@@ -1,3 +1,5 @@
+const timerText = document.querySelector("#timer");
+
 export const calcTime = (time) => {
   const hours = Math.floor(time / 3600);
   const minutes = Math.floor((time % 3600) / 60);
@@ -7,6 +9,10 @@ export const calcTime = (time) => {
     minutes: formatTime(minutes),
     seconds: formatTime(seconds),
   };
+};
+
+export const updateTime = ({ hours, minutes, seconds }) => {
+  timerText.textContent = `${hours}: ${minutes} : ${seconds}`;
 };
 
 const formatTime = (time) => {

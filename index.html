@@ -14,7 +14,7 @@
         <h2>Pomodoro Timer</h2>
         <div class="spacer"></div>
         <div class="header-links">
-            <a href="#" onclick="showLogs()">Logs</a>
+            <a href="#" id="showLog">Logs</a>
         </div>
     </header>
     <div class="wrapper">
@@ -34,7 +34,7 @@
         </div>
         <hr>
         <div class="btn-wrapper">
-            <a href="#" onclick="showSettings()">Settings</a>
+            <a href="#" id="settingsToggle">Settings</a>
         </div>
         <div class="hidden" id="settings">
             <div class="input-wrapper">
@@ -62,7 +62,7 @@
         </div>
         <div class="popup hidden">
             <h3>Pomodoro log</h3>
-            <a href="#" onclick="showLogs()" class="close-btn"></a>
+            <a href="#" class="close-btn"></a>
             <div class="popup-content">
                 <button type="button" class="grey">Clear log</button>
             </div>
