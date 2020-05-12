@@ -1,3 +1,6 @@
+import { calcTime } from "./timer.js";
+import { initNotification, createNotification } from "./notification.js";
+
 const timerPara = document.querySelector("#timer");
 const statusString = document.querySelector("#status");
 const settingsDiv = document.querySelector("#settings");
@@ -40,7 +43,6 @@ let longBreakTime = longBreakTimeInput.value * 60;
 let autoResume = autoResumeBox.value;
 
 let status = "work";
-let notificatonStatus = Notification.permission === "granted";
 
 const timeMap = new Map();
 timeMap.set("work", workTime);
@@ -53,21 +55,7 @@ let workCycle = 0;
 
 let logs = [];
 
-if (!window.Notification) {
-  console.log("Browser does not support notifications.");
-} else {
-  if (Notification.permission !== "granted") {
-    Notification.requestPermission()
-      .then((permission) => {
-        if (permission === "granted") {
-          notificatonStatus = true;
-        }
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }
-}
+initNotification();
 
 const changeStatusBtnStyling = (sessionStatus, event) => {
   if (status === sessionStatus) {
@@ -106,27 +94,6 @@ const statusToString = () => {
   return `${status === "work" ? `Session #${workCycle + 1}` : "Resting..."}`;
 };
 
-const calcTime = (time) => {
-  const hours = Math.floor(time / 3600);
-  const minutes = Math.floor((time % 3600) / 60);
-  const seconds = time % 60;
-  return {
-    hours: formatTime(hours),
-    minutes: formatTime(minutes),
-    seconds: formatTime(seconds),
-  };
-};
-
-const formatTime = (time) => {
-  if (time < 1) {
-    return "00";
-  }
-  if (time < 10) {
-    return `0${time}`;
-  }
-  return time;
-};
-
 const updateTime = ({ hours, minutes, seconds }) => {
   timerPara.textContent = `${hours}: ${minutes} : ${seconds}`;
 };
@@ -151,7 +118,7 @@ const finishCycle = () => {
   if (status === "work") {
     createLogEntry(timeMap.get(status) - (activeTime + 1));
     workCycle++;
-    createNotification();
+    createNotification(status, workCycle);
     if (workCycle >= 4) {
       workCycle = 0;
       changeStatusStyling("long break");
@@ -161,22 +128,10 @@ const finishCycle = () => {
       activeTime = breakTime;
     }
   } else {
-    createNotification();
+    createNotification(status, workCycle);
     createLogEntry(timeMap.get(status) - (activeTime + 1));
     changeStatusStyling("work");
     activeTime = workTime;
-  }
-};
-const createNotification = () => {
-  if (notificatonStatus) {
-    const body =
-      status === "work"
-        ? `Pomodoro session ${workCycle} is finished`
-        : "Break is over";
-    return new Notification("Pomodoro Timer", {
-      body,
-      icon: "../assets/alarm_large.png",
-    });
   }
 };
 
