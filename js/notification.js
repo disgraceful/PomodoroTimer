@@ -24,7 +24,7 @@ export const createNotification = (status, workCycle) => {
         : "Break is over";
     return new Notification("Pomodoro Timer", {
       body,
-      icon: "../assets/alarm_large.png",
+      icon: "../assets/alarm.png",
     });
   }
 };
