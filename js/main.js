@@ -14,14 +14,7 @@ const selectButtons = document.querySelectorAll(".btn-select");
 const [workBtn, breakBtn, longBreakBtn] = selectButtons;
 
 const regularButtons = document.querySelectorAll("button:not(.btn-select)");
-const [
-  startBtn,
-  finishBtn,
-  resetBtn,
-  saveBtn,
-  defaultBtn,
-  clearLogBtn,
-] = regularButtons;
+const [startBtn, resetBtn, saveBtn, defaultBtn, clearLogBtn] = regularButtons;
 
 const showLog = document.querySelector("#showLog");
 const closeLog = document.querySelector(".close-btn");
@@ -182,7 +175,6 @@ defaultBtn.addEventListener("click", () => {
   applySettings();
 });
 saveBtn.addEventListener("click", applySettings);
-finishBtn.addEventListener("click", () => (activeTime = 2));
 clearLogBtn.addEventListener("click", clearLogs);
 const toggleLogs = (e) => {
   e.preventDefault();
